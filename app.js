@@ -123,6 +123,10 @@ io.on('connection', (socket) => {
       gameRunning = false;
     }
 
+    if (playerId === currentPlayer) {
+      nextRound();
+    }
+
     console.log('User ' + player.name + ' disconnected');
     console.log('Number of players: ' + players.allIds.length);
   }
@@ -286,7 +290,7 @@ io.on('connection', (socket) => {
   function wordGuessed() {
     state.answered = [...state.answered, playerId];
     players = {
-      ...players,
+      allIds: players.allIds.sort((a, b) => players.byId[b].points - players.byId[a].points),
       byId: {
         ...players.byId,
         [playerId]: {
@@ -300,6 +304,12 @@ io.on('connection', (socket) => {
       id: playerId,
       points: players.byId[playerId].points
     });
+
+    socket.emit('player-won', word);
+
+    if (state.answered.length === (players.allIds.length - 1)) {
+      nextRound();
+    }
   }
 });
 

@@ -1,5 +1,6 @@
 // ******************** CONSTANTS ******************** //
 const KEY_ENTER = 13;
+const KEY_ARROW_UP = 38;
 
 // ******************** DOM ******************** //
 const canvas = document.getElementById('canvas');
@@ -11,6 +12,8 @@ const chatSubmit = document.getElementById('chat-submit');
 const wordBox = document.getElementById('word');
 const timerBox = document.getElementById('timer');
 
+const winAudio = new Audio('/audio/win.mp3');
+const someoneGuessedAudio = new Audio('/audio/someone-guessed.mp3');
 const context = canvas.getContext("2d");
 const bufferCanvas = document.createElement('canvas');
 const bufferContext = bufferCanvas.getContext('2d');
@@ -37,7 +40,8 @@ let state = {
   },
   activePlayer: null,
   word: '',
-  timeLeft: 0
+  timeLeft: 0,
+  lastMessage: ''
 };
 
 
@@ -71,10 +75,22 @@ function keyDown(e) {
   if (e.keyCode === KEY_ENTER) {
     sendMessage();
   }
+
+  if (e.keyCode === KEY_ARROW_UP) {
+    lastMessage();
+  }
+}
+
+function lastMessage() {
+  chatInput.value = state.lastMessage;
+  setTimeout(() => {
+    chatInput.selectionStart = chatInput.selectionEnd = chatInput.value.length;
+  }, 1)
 }
 
 function sendMessage() {
   const message = chatInput.value;
+  state.lastMessage = message;
   appendMessage(state.players.byId[socket.id].name, message);
   chatInput.value = "";
 
@@ -90,7 +106,16 @@ function appendMessage(playername, msg) {
   message.className = 'chat__message';
   message.innerHTML = `<b>${playername}</b>: ${msg}`;
 
+  const viewportHeight = chatWindow.clientHeight;
+  const scrollHeight = chatWindow.scrollHeight;
+  const scrollTop = chatWindow.scrollTop;
+
   chatWindow.appendChild(message);
+
+  // Scroll to end if at the end
+  if (scrollTop >= (scrollHeight - viewportHeight - 20)) {
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
 }
 
 
@@ -206,7 +231,6 @@ socket.on('player-connected', playerConnected);
 socket.on('player-disconnected', playerDisconnected);
 
 function initState(newState) {
-  console.log(newState);
   state = {
     ...state,
     ...newState
@@ -264,7 +288,7 @@ function updatePlayers() {
 
     let leader = '';
     if (index === 0) {
-      active = 'score__player--leader';
+      leader = 'score__player--leader';
     }
 
     return `
@@ -286,9 +310,18 @@ socket.on('new-word', newWord);
 socket.on('word', drawWord);
 socket.on('timer', timer);
 socket.on('points', points);
+socket.on('player-won', playerWon);
 
 function updateWord() {
-  wordBox.innerHTML = state.word;
+  let words;
+  if (socket.id === state.activePlayer) {
+    words = [state.word];
+  } else {
+    words = state.word
+      .split(' ')
+      .map((word) => `<span class="round__word-part">${word.split('').join(' ')}</span>`);
+  }
+  wordBox.innerHTML = words.join('');
 }
 
 function updateTimer() {
@@ -328,5 +361,18 @@ function timer(timeLeft) {
 
 function points({ id, points }) {
   state.players.byId[id].points = points;
+  state.players.allIds = state.players.allIds
+    .sort((a, b) => state.players.byId[b].points - state.players.byId[a].points);
+
   updatePlayers();
+
+  if (socket.id !== id) {
+    someoneGuessedAudio.play();
+  }
+}
+
+function playerWon(word) {
+  state.word = word;
+  updateWord();
+  winAudio.play();
 }
