@@ -190,7 +190,7 @@ function clearCanvas() {
 }
 
 function clear() {
-  if (socket.id === state.activePlayer) {
+  if (socket.id !== state.activePlayer) {
     return;
   }
 
