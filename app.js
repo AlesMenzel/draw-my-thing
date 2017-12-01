@@ -65,11 +65,11 @@ let players = {
   allIds: []
 };
 let word = '';
-let currentPlayer = 0;
+let currentPlayer = null;
 let gameRunning = false;
 
 const state = {
-  roudTime: 20, //s
+  roudTime: 200, //s
   timer: null,
   answered: []
 }
@@ -233,7 +233,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('clear-canvas', () => {
-    socket.broadcast.emit('clear-canvas');
+    if (playerId === currentPlayer) {
+      socket.broadcast.emit('clear-canvas');
+    }
   });
 
   socket.on('chat-message', (message) => {
