@@ -1,0 +1,26 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js')
+    script(src='/socket.io/socket.io.js')
+    script.
+      socket = io();
+  body
+    div.round
+      div#word.round__word
+      div#timer.round__timer
+    div.menu
+      div#clear-canvas.menu__item.menu__item--clear(title="Clear canvas")
+        i.fa.fa-2x.fa-times
+    div.panel
+      div#players.score
+      div#chat.chat
+        div#chat-window.chat__window
+        input#chat-input.chat__input
+        button(type='button')#chat-submit.chat__submit Send
+    canvas#canvas
+    script(src='/javascripts/main.js')
+
