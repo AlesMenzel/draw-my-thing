@@ -30,9 +30,6 @@ a {
 }
 
 .menu__item {
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
   font-size: 16px;
 
   display: flex;
@@ -41,6 +38,11 @@ a {
 }
 
 .menu__item--clear {
+  width: 60px;
+  height: 60px;
+
+  cursor: pointer;
+
   color: #666666;
   background-color: rgba(0,0,0,0.08);
   transition: all 0.15s ease-in-out;
@@ -49,6 +51,75 @@ a {
 .menu__item--clear:hover {
   color: #333333;
   background-color: rgba(0,0,0,0.16);
+}
+
+.menu__item--colors {
+  margin: 10px auto;
+
+  color: #666666;
+  transition: all 0.15s ease-in-out;
+
+  display: grid;
+  grid-template-columns: repeat(2, 20px);
+  grid-template-rows: repeat(auto-fill, 20px);
+  grid-row-gap: 4px;
+  grid-column-gap: 4px;
+}
+
+.color {
+  width: 20px;
+  height: 20px;
+
+  cursor: pointer;
+}
+
+.color:hover {
+  outline: 2px solid black;
+}
+
+.color--black {
+  background-color: black;
+}
+.color--white {
+  background-color: white;
+  outline: 1px solid #666666;
+}
+.color--red {
+  background-color: red;
+}
+.color--orange {
+  background-color: orange;
+}
+.color--yellow {
+  background-color: yellow;
+}
+.color--green {
+  background-color: green;
+}
+.color--lime {
+  background-color: lime;
+}
+.color--cyan {
+  background-color: cyan;
+}
+.color--blue {
+  background-color: blue;
+}
+.color--purple {
+  background-color: purple;
+}
+.color--pink {
+  background-color: pink;
+}
+.color--custom {
+  background: linear-gradient(to left top, rgb(255, 123, 15), #ff994a);
+  color: white;
+
+  font-size: 12px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .panel {

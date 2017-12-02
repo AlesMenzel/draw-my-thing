@@ -11,12 +11,15 @@ const chatInput = document.getElementById('chat-input');
 const chatSubmit = document.getElementById('chat-submit');
 const wordBox = document.getElementById('word');
 const timerBox = document.getElementById('timer');
+const colorsBox = document.getElementById('colors');
 
 const winAudio = new Audio('/audio/win.mp3');
 const someoneGuessedAudio = new Audio('/audio/someone-guessed.mp3');
 const context = canvas.getContext("2d");
 const bufferCanvas = document.createElement('canvas');
 const bufferContext = bufferCanvas.getContext('2d');
+const colorDialog = document.createElement('input');
+colorDialog.type = 'color';
 
 
 
@@ -127,7 +130,31 @@ canvas.addEventListener('mousedown', mouseDown, false);
 canvas.addEventListener('mouseup', mouseUp, false);
 canvas.addEventListener('mouseout', mouseOut, false);
 canvas.addEventListener('mousemove', throttledMouseMove, false);
+colorsBox.addEventListener('click', pickColor, false);
+colorDialog.addEventListener('change', selectColor, false);
 socket.on('draw', draw);
+
+function pickColor(e) {
+  if (!e.target.classList.contains('color')) {
+    return;
+  }
+
+  const color = e.target.className
+    .split(' ')
+    .filter((cls) => cls.includes('color--'))[0]
+    .replace('color--', '');
+
+  if (color === 'custom') {
+    colorDialog.click();
+    return;
+  }
+
+  state.color = color;
+}
+
+function selectColor() {
+  state.color = colorDialog.value;
+}
 
 function mouseUp() {
   state.isDrawing = false;
